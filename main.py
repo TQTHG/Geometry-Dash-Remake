@@ -86,6 +86,17 @@ while running:
             if event.key == pygame.K_SPACE:
                     cube.jump()
 
+        if event.type == pygame.MOUSEBUTTONDOWN:
+
+            if play_rect.collidepoint(event.pos):
+                current_screen = "PLAY"
+
+            elif level_1_rect.collidepoint(event.pos):
+                current_screen = "LEVEL1"
+
+            elif back_rect.collidepoint(event.pos):
+                current_screen = "MENU"
+
     if current_screen == "MENU":
         screen.fill(black)
 
@@ -98,12 +109,6 @@ while running:
         logo_text = logo_font.render("GEOMETRY DASH" , True , white)
         logo_rect = logo_text.get_rect(center= (width / 2 , height / 2 - 200))
         screen.blit(logo_text,logo_rect)
-
-        if play_rect.collidepoint(mousepos):
-            play_text = Play_font.render("PLAY" , True , green)
-            screen.blit(play_text,play_rect)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                current_screen = "PLAY"
 
     elif current_screen == "PLAY":
         screen.fill(black)
@@ -121,24 +126,6 @@ while running:
         next_lvl = Sysfont.render("next lvl ==>" , True , white)
         next_lvl_rect = next_lvl.get_rect(bottomleft = (width - 150 , height//2))
         screen.blit(next_lvl,next_lvl_rect)
-
-        if next_lvl_rect.collidepoint(mousepos):
-            next_lvl = Sysfont.render("next lvl ==>" , True , green)
-            screen.blit(next_lvl,next_lvl_rect)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pass
-
-        if level_1_rect.collidepoint(mousepos):
-            level_1 = Play_font.render("LEVEL 1" , True , green)
-            screen.blit(level_1,level_1_rect)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                current_screen = "LEVEL1"
-
-        if back_rect.collidepoint(mousepos):
-            back_text = Sysfont.render("Back to Menu" , True , green)
-            screen.blit(back_text,back_rect)
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                current_screen = "MENU"
 
     elif current_screen == "LEVEL1":
         screen.fill(black)
