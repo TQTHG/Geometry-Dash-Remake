@@ -48,6 +48,7 @@ class Block:
         if self.x <= -self.width:
             self.x = width
             self.rect.x = self.x
+            
 
     def draw(self,screen):
         pygame.draw.rect(screen,self.color,self.rect,5)
@@ -57,6 +58,41 @@ blocks = [
     Block(width + 50,ground_y - 50),
     Block(width + 100 , ground_y - 50)
 ]
+
+class Spike:
+    def __init__(self):
+        self.width = 50
+        self.height = 50
+        self.x = width - 100
+        self.y = ground_y - self.height
+        self.color = red
+        self.speed = scroll_speed
+        self.rect_width = 10
+        self.rect_height = 30
+        self.hitbox_x = self.x + 20
+        self.hitbox_y = self.y + 10
+        self.rect = pygame.Rect(self.hitbox_x,self.hitbox_y,
+                                self.rect_width,self.rect_height)
+
+    def update(self):
+        self.x -= self.speed
+        self.hitbox_x = self.x + 20
+        self.rect.x = self.hitbox_x
+        if self.x <= -self.width:
+            self.x = width + 300
+            self.hitbox_x = self.x + 20
+            self.rect.x = self.hitbox_x 
+
+    def draw(self,screen):
+        pygame.draw.polygon(screen,
+                            self.color,
+                            [(self.x + self.width // 2 , self.y ),
+                             (self.x, self.y + self.height),
+                             (self.x + self.width , self.y + self.height),
+                             ]
+        )
+
+spike = Spike()
 
 class Cube:
     def __init__(self):
@@ -79,7 +115,7 @@ class Cube:
             self.vy = self.jump_force
             self.is_ground = False
             
-    def update(self,ground_y,blocks):
+    def update(self,ground_y,blocks,spike):
         self.old_x = self.x
         self.old_y = self.y
         self.vy += self.gravity
@@ -99,6 +135,9 @@ class Cube:
                     break
                 else:
                     print("dead")
+
+            elif self.rect.colliderect(spike.rect):
+                print("dead")
 
     def draw(self,screen):
         pygame.draw.rect(screen,self.color,self.rect)
@@ -172,12 +211,15 @@ while running:
         for block in blocks:
             block.update()
 
-        cube.update(ground_y,blocks)
+        spike.update()
+        spike.draw(screen)
+
+        cube.update(ground_y,blocks,spike)
         cube.draw(screen)
 
         for block in blocks:
             block.draw(screen)
-                    
+      
     clock.tick(fps)
     pygame.display.update()
 pygame.quit()
