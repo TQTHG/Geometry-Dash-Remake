@@ -58,6 +58,22 @@ while running:
     elif current_screen == "PLAY":
         screen.fill(black)
 
+        mousepos = pygame.mouse.get_pos()
+
+        back_text = Sysfont.render("Back to Menu" , True , white)
+        back_rect = back_text.get_rect(center = (width / 2 , height - 100))
+        screen.blit(back_text,back_rect)
+
+        if back_rect.collidepoint(mousepos):
+            back_text = Sysfont.render("Back to Menu" , True , green)
+            screen.blit(back_text,back_rect)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                current_screen = "MENU"
+
+        level_1 = Play_font.render("LEVEL 1" , True , white)
+        level_1_rect = level_1.get_rect(center = (width/2 , height/2))
+        screen.blit(level_1,level_1_rect)
+        
 
     clock.tick(fps)
     pygame.display.update()
