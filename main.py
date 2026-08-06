@@ -72,6 +72,23 @@ class Cube:
 
 cube = Cube()
 
+class Block:
+    def __init__(self,x,y):
+        self.width = 50
+        self.height = 50
+        self.x = x
+        self.y = y
+        self.color = blue
+        self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
+
+    def draw(self,screen):
+        pygame.draw.rect(screen,self.color,self.rect,5)
+
+blocks = [
+    Block(width//2,ground_y - 50),
+    Block(width//2 + 50,ground_y - 50),
+]
+
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Geometry Dash")
 
@@ -132,6 +149,9 @@ while running:
 
         cube.update(ground_y)
         cube.draw(screen)
+
+        for block in blocks:
+            block.draw(screen)
                     
     clock.tick(fps)
     pygame.display.update()
