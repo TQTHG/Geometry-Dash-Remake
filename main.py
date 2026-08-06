@@ -5,6 +5,7 @@ pygame.init()
 # Screen
 width = 1200
 height = 800
+current_screen = "MENU"
 
 # Frame Per Second
 fps = 60
@@ -17,6 +18,14 @@ green = (0,255,0)
 white = (255,255,255)
 black = (0,0,0)
 
+# Font
+Sysfont = pygame.font.SysFont(None,30)
+Play_font = pygame.font.SysFont(None,70)
+logo_font = pygame.font.SysFont(None,100)
+
+# Menu
+
+
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Geometry Dash")
 
@@ -27,7 +36,28 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    screen.fill(black)
+    if current_screen == "MENU":
+        screen.fill(black)
+
+        mousepos = pygame.mouse.get_pos()
+
+        play_text = Play_font.render("PLAY" , True , white)
+        play_rect = play_text.get_rect(center = (width / 2 , height / 2))
+        screen.blit(play_text,play_rect)
+
+        logo_text = logo_font.render("GEOMETRY DASH" , True , white)
+        logo_rect = logo_text.get_rect(center= (width / 2 , height / 2 - 200))
+        screen.blit(logo_text,logo_rect)
+
+        if play_rect.collidepoint(mousepos):
+            play_text = Play_font.render("PLAY" , True , green)
+            screen.blit(play_text,play_rect)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                current_screen = "PLAY"
+
+    elif current_screen == "PLAY":
+        screen.fill(black)
+
 
     clock.tick(fps)
     pygame.display.update()
