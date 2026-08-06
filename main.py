@@ -25,6 +25,9 @@ logo_font = pygame.font.SysFont(None,100)
 
 # Menu
 
+# PLay
+lvl_select = "1"
+
 
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Geometry Dash")
@@ -70,11 +73,20 @@ while running:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 current_screen = "MENU"
 
-        level_1 = Play_font.render("LEVEL 1" , True , white)
-        level_1_rect = level_1.get_rect(center = (width/2 , height/2))
-        screen.blit(level_1,level_1_rect)
-        
+            level_1 = Play_font.render("LEVEL 1" , True , white)
+            level_1_rect = level_1.get_rect(center = (width//2 , height//2))
+            screen.blit(level_1,level_1_rect)
 
+            next_lvl = Sysfont.render("next lvl ==>" , True , white)
+            next_lvl_rect = next_lvl.get_rect(bottomleft = (width - 150 , height//2))
+            screen.blit(next_lvl,next_lvl_rect)
+
+        if next_lvl_rect.collidepoint(mousepos):
+            next_lvl = Sysfont.render("next lvl ==>" , True , green)
+            screen.blit(next_lvl,next_lvl_rect)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pass
+                    
     clock.tick(fps)
     pygame.display.update()
 pygame.quit()
