@@ -91,6 +91,10 @@ class Spike:
                              (self.x + self.width , self.y + self.height),
                              ]
         )
+    def reset(self):
+        self.x = width - 100
+        self.hitbox_x = self.x + 20
+        self.rect.x = self.hitbox_x
 
 spike = Spike()
 
@@ -109,6 +113,7 @@ class Cube:
         self.color = green
         self.old_x = self.x
         self.old_y = self.y
+        self.is_dead = False
 
     def jump(self):
         if self.is_ground == True:
@@ -134,10 +139,10 @@ class Cube:
                     self.rect.y = self.y
                     break
                 else:
-                    print("dead")
+                    self.is_dead = True
 
             elif self.rect.colliderect(spike.rect):
-                print("dead")
+                self.is_dead = True
 
     def draw(self,screen):
         pygame.draw.rect(screen,self.color,self.rect)
@@ -147,6 +152,7 @@ class Cube:
         self.vy = 0
         self.y = ground_y - self.height
         self.is_ground = True
+        self.is_dead = False
 
 cube = Cube()
 
@@ -163,6 +169,16 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                     cube.jump()
+            if event.key == pygame.K_SPACE:
+                if current_screen == "DEAD":
+                    cube.reset()
+                    spike.reset()
+                    blocks = [
+                                Block(width,ground_y - 50),
+                                Block(width + 50,ground_y - 50),
+                                Block(width + 100 , ground_y - 50)
+                            ]
+                    current_screen = "LEVEL1"
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -205,6 +221,16 @@ while running:
         next_lvl_rect = next_lvl.get_rect(bottomleft = (width - 150 , height//2))
         screen.blit(next_lvl,next_lvl_rect)
 
+    elif current_screen == "DEAD":
+
+        dead_text = logo_font.render("GAME OVER" , True , red)
+        dead_rect = dead_text.get_rect(center = (width / 2 , height / 2))
+        screen.blit(dead_text,dead_rect)
+
+        restart = Sysfont.render("Press SPACE to restart" , True , white)
+        restart_rect = restart.get_rect(center = (width / 2 , height / 2 + 50))
+        screen.blit(restart,restart_rect)
+
     elif current_screen == "LEVEL1":
         screen.fill(black)
 
@@ -219,6 +245,9 @@ while running:
 
         for block in blocks:
             block.draw(screen)
+
+        if cube.is_dead:
+            current_screen = "DEAD"
       
     clock.tick(fps)
     pygame.display.update()
