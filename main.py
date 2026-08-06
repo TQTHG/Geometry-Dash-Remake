@@ -7,6 +7,7 @@ width = 1200
 height = 800
 current_screen = "MENU"
 ground_y = height - 100
+scroll_speed = 10
 
 # Frame Per Second
 fps = 60
@@ -29,7 +30,34 @@ logo_font = pygame.font.SysFont(None,100)
 # PLay
 lvl_select = "1"
 
-# Cube
+# OOP
+
+class Block:
+    def __init__(self,x,y):
+        self.width = 50
+        self.height = 50
+        self.x = x
+        self.y = y
+        self.color = blue
+        self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
+        self.speed = scroll_speed
+
+    def update(self):
+        self.x -= self.speed
+        self.rect.x = self.x
+        if self.x <= -self.width:
+            self.x = width
+            self.rect.x = self.x
+
+    def draw(self,screen):
+        pygame.draw.rect(screen,self.color,self.rect,5)
+
+blocks = [
+    Block(width,ground_y - 50),
+    Block(width + 50,ground_y - 50),
+    Block(width + 100 , ground_y - 50)
+]
+
 class Cube:
     def __init__(self):
         self.width = 50
@@ -43,23 +71,34 @@ class Cube:
         self.is_ground = True
         self.rect = pygame.Rect(self.x , self.y , self.width , self.height)
         self.color = green
+        self.old_x = self.x
+        self.old_y = self.y
 
     def jump(self):
         if self.is_ground == True:
             self.vy = self.jump_force
             self.is_ground = False
-
-    def physics(self):
+            
+    def update(self,ground_y,blocks):
+        self.old_x = self.x
+        self.old_y = self.y
         self.vy += self.gravity
         self.y += self.vy
-        self.rect.y = self.y
-
-    def update(self,ground_y):
-        self.physics()
+        self.rect.y = self.y        
         if self.y >= ground_y - self.height:
             self.y = ground_y - self.height
             self.vy = 0
             self.is_ground = True
+        for block in blocks:
+            if self.rect.colliderect(block.rect):
+                if (self.old_y + self.height) <= block.rect.top:
+                    self.y = block.rect.top - self.height
+                    self.vy = 0
+                    self.is_ground = True
+                    self.rect.y = self.y
+                    break
+                else:
+                    print("dead")
 
     def draw(self,screen):
         pygame.draw.rect(screen,self.color,self.rect)
@@ -71,23 +110,6 @@ class Cube:
         self.is_ground = True
 
 cube = Cube()
-
-class Block:
-    def __init__(self,x,y):
-        self.width = 50
-        self.height = 50
-        self.x = x
-        self.y = y
-        self.color = blue
-        self.rect = pygame.Rect(self.x,self.y,self.width,self.height)
-
-    def draw(self,screen):
-        pygame.draw.rect(screen,self.color,self.rect,5)
-
-blocks = [
-    Block(width//2,ground_y - 50),
-    Block(width//2 + 50,ground_y - 50),
-]
 
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Geometry Dash")
@@ -147,7 +169,10 @@ while running:
     elif current_screen == "LEVEL1":
         screen.fill(black)
 
-        cube.update(ground_y)
+        for block in blocks:
+            block.update()
+
+        cube.update(ground_y,blocks)
         cube.draw(screen)
 
         for block in blocks:
