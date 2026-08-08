@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 
@@ -50,12 +51,13 @@ class Block:
 
     def update(self):
         self.x -= self.speed
-        self.rect.x = self.x
+        self.rect.x = self.x 
         if self.x <= -self.width:
-            self.x = width
+            self.x = width + 50 * random.randint(0,10)
+            self.y = 50 * random.randint(1,12)
             self.rect.x = self.x
+            self.rect.y = self.y
             
-
     def draw(self,screen):
         pygame.draw.rect(screen,self.color,self.rect,5)
 
@@ -85,7 +87,7 @@ class Spike:
         self.hitbox_x = self.x + 20
         self.rect.x = self.hitbox_x
         if self.x <= -self.width:
-            self.x = width + 300
+            self.x = width + 50 * random.randint(0,5)
             self.hitbox_x = self.x + 20
             self.rect.x = self.hitbox_x 
 
@@ -205,6 +207,9 @@ class Ship:
             elif self.rect.colliderect(spike.rect):
                 self.is_dead = True
 
+            elif (self.rect.y <= 0) or (self.rect.y + self.height >= height):
+                self.is_dead = True
+
     def draw(self,screen):
         pygame.draw.rect(screen,self.color,self.rect)
 
@@ -313,6 +318,8 @@ while running:
         screen.fill(black)
 
         previous_screen = "LEVEL1"
+
+        pygame.draw.line(screen,white,(0,ground_y),(width,ground_y),5)
 
         for block in blocks:
             block.update()
