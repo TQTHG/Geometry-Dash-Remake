@@ -9,6 +9,11 @@ current_screen = "MENU"
 ground_y = height - 100
 scroll_speed = 10
 
+# Animation
+rect_x = 0
+transition = False
+transition_speed = 40
+
 # Frame Per Second
 fps = 60
 clock = pygame.time.Clock()
@@ -156,6 +161,8 @@ class Cube:
 
 cube = Cube()
 
+
+
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Geometry Dash")
 
@@ -190,6 +197,10 @@ while running:
 
             elif back_rect.collidepoint(event.pos):
                 current_screen = "MENU"
+                rect_x = 0
+
+            elif next_lvl_rect.collidepoint(event.pos):
+                transition = True
 
     if current_screen == "MENU":
         screen.fill(black)
@@ -214,12 +225,21 @@ while running:
         screen.blit(back_text,back_rect)
 
         level_1 = Play_font.render("LEVEL 1" , True , white)
-        level_1_rect = level_1.get_rect(center = (width//2 , height//2))
+        level_1_rect = level_1.get_rect(center = (width//2 + rect_x , height//2))
         screen.blit(level_1,level_1_rect)
+
+        level_2 = Play_font.render("LEVEL 2" , True , white)
+        level_2_rect = level_2.get_rect(center = (width//2 + width + rect_x , height//2))
+        screen.blit(level_2,level_2_rect)
 
         next_lvl = Sysfont.render("next lvl ==>" , True , white)
         next_lvl_rect = next_lvl.get_rect(bottomleft = (width - 150 , height//2))
         screen.blit(next_lvl,next_lvl_rect)
+
+        if transition:
+            rect_x -= transition_speed
+            if rect_x <= -width:
+                transition = False
 
     elif current_screen == "DEAD":
 
