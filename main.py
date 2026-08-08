@@ -8,6 +8,7 @@ height = 800
 current_screen = "MENU"
 ground_y = height - 100
 scroll_speed = 10
+previous_screen = ""
 
 # Animation
 rect_x = 0
@@ -59,9 +60,9 @@ class Block:
         pygame.draw.rect(screen,self.color,self.rect,5)
 
 blocks = [
-    Block(width,ground_y - 50),
-    Block(width + 50,ground_y - 50),
-    Block(width + 100 , ground_y - 50)
+    Block(width,ground_y - 100),
+    Block(width + 50,ground_y - 100),
+    Block(width + 100 , ground_y - 100)
 ]
 
 class Spike:
@@ -161,8 +162,61 @@ class Cube:
 
 cube = Cube()
 
+class Ship:
+    def __init__(self):
+        self.width = 50
+        self.height = 50
+        self.x = width // 2 - 200
+        self.y = height // 2       
+        self.vx = 0
+        self.vy = 0
+        self.gravity = 1
+        self.fly_force = -1.5
+        self.rect = pygame.Rect(self.x , self.y , self.width , self.height)
+        self.color = green
+        self.old_x = self.x
+        self.old_y = self.y
+        self.is_dead = False
 
+    def fly(self):
+        self.vy += self.fly_force
+        if self.vy < -8:
+            self.vy = -8
 
+    def update(self):
+        self.old_y = self.y
+        self.vy += self.gravity
+        if self.vy > 8:
+            self.vy = 8
+        self.y += self.vy
+        self.rect.y = self.y
+
+        for block in blocks:
+            if self.rect.colliderect(block.rect):
+                if (self.old_y + self.height) <= block.rect.top:
+                    self.y = block.rect.top - self.height
+                    self.vy = 0
+                elif self.old_y >= block.rect.bottom:
+                    self.y = block.rect.bottom + 10
+                    self.vy = 0
+                else:
+                    self.is_dead = True
+
+            elif self.rect.colliderect(spike.rect):
+                self.is_dead = True
+
+    def draw(self,screen):
+        pygame.draw.rect(screen,self.color,self.rect)
+
+    def reset(self):
+        self.vx = 0
+        self.vy = 0
+        self.y = height // 2
+        self.old_y = self.y
+        self.is_dead = False
+
+ship = Ship()
+        
 screen = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Geometry Dash")
 
@@ -180,12 +234,13 @@ while running:
                 if current_screen == "DEAD":
                     cube.reset()
                     spike.reset()
+                    ship.reset()
                     blocks = [
                                 Block(width,ground_y - 50),
                                 Block(width + 50,ground_y - 50),
                                 Block(width + 100 , ground_y - 50)
                             ]
-                    current_screen = "LEVEL1"
+                    current_screen = previous_screen
 
         if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -194,6 +249,9 @@ while running:
 
             elif level_1_rect.collidepoint(event.pos):
                 current_screen = "LEVEL1"
+
+            elif level_2_rect.collidepoint(event.pos):
+                current_screen = "LEVEL2"
 
             elif back_rect.collidepoint(event.pos):
                 current_screen = "MENU"
@@ -254,6 +312,8 @@ while running:
     elif current_screen == "LEVEL1":
         screen.fill(black)
 
+        previous_screen = "LEVEL1"
+
         for block in blocks:
             block.update()
 
@@ -269,6 +329,29 @@ while running:
         if cube.is_dead:
             current_screen = "DEAD"
       
+    elif current_screen == "LEVEL2":
+        screen.fill(black)
+
+        previous_screen = "LEVEL2"
+
+        for block in blocks:
+            block.update()
+
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_SPACE]:
+            ship.fly()
+        ship.update()
+        ship.draw(screen)
+
+        spike.update()
+        spike.draw(screen)
+
+        for block in blocks:
+            block.draw(screen)
+
+        if ship.is_dead:
+            current_screen = "DEAD"
+
     clock.tick(fps)
     pygame.display.update()
 pygame.quit()
